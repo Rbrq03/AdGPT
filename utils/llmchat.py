@@ -1,9 +1,9 @@
 from openai import OpenAI
 import time
 
-def ChatGPT_chat(messages, api_key, model="gpt-4-turbo-preview", temperature=0.6):
+def ChatGPT_chat(messages, api_key, base_url, model, temperature=0.6):
 
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key, base_url=base_url)
     
     try:
         response = client.chat.completions.create(

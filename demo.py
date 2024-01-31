@@ -35,9 +35,11 @@ ROLE_PROMPT = open("./prompts/role.txt", 'r').read()
 
 class AdGPT:
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, openai_base, chat_model):
         
         self.api_key = api_key
+        self.base_url = openai_base
+        self.chat_model = chat_model
         self.predictor, self.metadata = self.set_detic()
         self.processor, self.model = self.set_caption_model()
         
@@ -102,7 +104,7 @@ class AdGPT:
         for i in range(len(classes)):
             obj_crop = crop_img(img, boxes[i])
             obj_crop = cv2pil(obj_crop)
-            obj_caption = self.get_caption(obj_crop)
+            obj_caption = get_caption(obj_crop, self.processor, self.model)
             info_per_obj.append({classes[i]: obj_caption})
 
         observation = {
@@ -119,7 +121,7 @@ class AdGPT:
             {"role": "system", "content": CLASSIFY_ROLE},
         ]
 
-        response = ChatGPT_chat(messages, self.api_key)
+        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
 
         messages.append(
             {
@@ -131,7 +133,7 @@ class AdGPT:
         info = HINT_PROMPT + "\n" + str(self.observation)
         messages.append({"role": "user", "content": info})
 
-        response = ChatGPT_chat(messages, self.api_key)
+        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
 
         return response
 
@@ -150,7 +152,7 @@ class AdGPT:
             },
         ]
         
-        response = ChatGPT_chat(messages, self.api_key)
+        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
 
         prompt1 = "Analyze the content of this ad step by step according to the chain of reasoning given above, and then summarize the ad for me. The result of the analysis starts with Thought:, and the final result of the summary starts with Summary:"
         prompt2 = "Here is visual result:" + str(self.observation)
@@ -164,15 +166,19 @@ class AdGPT:
         messages.append({"role": "user", "content": prompt1})
         messages.append({"role": "user", "content": prompt2})
 
-        res = ChatGPT_chat(messages, self.api_key)
+        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
+        index = response.find("Summary")
+        response = response[index:]
 
-        return messages, res
+        return messages, response
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='AdGPT')
     parser.add_argument('--image_path', type=str, help='Path to the image file')
     parser.add_argument('--openai_key', type=str, help='openai api_key')
+    parser.add_argument('--openai_base', type=str, help='openai api_base')
+    parser.add_argument('--chat_model', type=str, help='openai chat model')
     args = parser.parse_args()
 
     return args
@@ -180,6 +186,6 @@ def get_args():
 if __name__ == "__main__":
 
     args = get_args()
-    agent = AdGPT(args.openai_key)
-    result = agent.predict(args.image_path)
+    agent = AdGPT(args.openai_key, args.openai_base, args.chat_model)
+    _, result = agent.predict(args.image_path)
     print(result)

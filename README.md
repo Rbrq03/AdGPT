@@ -25,12 +25,23 @@ python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 
 ```
 python demo.py --image_path ./img/test.jpg \
-               --openai_key YOUR_API_KEY
+               --openai_key YOUR_API_KEY \
+               --openai_base https://api.openai.com/v1 \
+               --chat_model gpt-4-turbo-preview
 
 #if you have more than one device
 CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
-                                      --openai_key YOUR_API_KEY
+                                      --openai_key YOUR_API_KEY \
+                                      --openai_base https://api.openai.com/v1 \
+                                      --chat_model gpt-4-turbo-preview
 ```
+
+### Example
+
+|Image|Summary|
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![Image](./img/test.jpg) |This advertisement features a pair of high-performance shoes, distinguished by a visually striking fire trail that symbolizes exceptional speed and agility. Targeted at athletes and fitness enthusiasts, the ad suggests that these shoes can significantly enhance athletic performance. While specific promotional offers or a clear call to action are not detailed in the provided analysis, the imagery alone strongly encourages potential buyers to explore and possibly purchase the shoes to unlock their peak performance capabilities. The ad's emotional and visual appeal lies in its promise of speed, making it memorable and engaging for its intended audience. |
+| ![Image](./img/test2.jpg)| This Nissan GT-R advertisement capitalizes on themes of speed and celebrity endorsement to position the sports car as a symbol of performance and luxury. By highlighting its rapid acceleration and associating the vehicle with Usain Bolt, the "world's fastest man," the ad targets sports car enthusiasts and those who aspire to the pinnacle of automotive achievement. The inclusion of a socially engaging element through a Facebook link, along with the imagery used, aims to create an aspirational image for the Nissan GT-R, inviting the audience to envision themselves at the pinnacle of success and performance.|
 
 ## Acknowledgement
 
