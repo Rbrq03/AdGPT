@@ -1,0 +1,1 @@
+I want you to act as an ad type classifier. I will provide you with observations of this ad image (using some visual tools: object detection, image caption, OCR) and you will need to determine what type of ad it is. First of all tell me, what types of ads you think there are in terms of content

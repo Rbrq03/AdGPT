@@ -1,0 +1,1 @@
+I want you to act as  an advertisement interpreter, i will give you the result of Imagecaption , ocr  and info_per_object,you should summary the advertisment for me.

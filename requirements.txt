@@ -1,0 +1,14 @@
+opencv-python-headless
+mss
+dataclasses
+ftfy
+regex
+fasttext
+scikit-learn
+lvis
+nltk
+easyocr
+openai
+timm
+transformers
+git+https://github.com/openai/CLIP.git
