@@ -28,8 +28,10 @@ python demo.py --image_path ./img/test.jpg \
                --openai_key YOUR_API_KEY \
                --openai_base https://api.openai.com/v1 \
                --chat_model gpt-4-turbo-preview
+```
 
-#if you have more than one device
+if you have more than one device
+```
 CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
                                       --openai_key YOUR_API_KEY \
                                       --openai_base https://api.openai.com/v1 \
