@@ -11,4 +11,7 @@ easyocr
 openai
 timm
 transformers
+accelerate
+diffusers
+open_clip_torch
 git+https://github.com/openai/CLIP.git
