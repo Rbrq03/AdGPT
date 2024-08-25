@@ -25,21 +25,31 @@ python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 
 ### AdGPT
 
+**Openai series**
 ```
-python demo.py --image_path ./img/test.jpg \
+CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
+               --openai \
                --openai_key YOUR_API_KEY \
                --openai_base https://api.openai.com/v1 \
-               --chat_model gpt-4-turbo-preview
+               --chat_model gpt-4o-mini
 ```
 
+**GLM series**
+```
+CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
+               --chatglm \
+               --glm_key YOUR_API_KEY \
+               --chat_model glm4
+```
+<!-- 
 if you have more than one device
 
 ```
-CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
+ python demo.py --image_path ./img/test.jpg \
                                       --openai_key YOUR_API_KEY \
                                       --openai_base https://api.openai.com/v1 \
                                       --chat_model gpt-4-turbo-preview
-```
+``` -->
 
 #### Example
 
