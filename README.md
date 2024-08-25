@@ -41,6 +41,8 @@ CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
                --glm_key YOUR_API_KEY \
                --chat_model glm4
 ```
+
+Check [OpenAI](https://platform.openai.com/playground/chat) and [GLM](https://open.bigmodel.cn/dev/howuse/introduction) documents for how to get your own API.
 <!-- 
 if you have more than one device
 
@@ -73,7 +75,8 @@ python test.py --GSS
 
 - [ ] Metrics-ChatGPT Rating
 - [ ] Downstream Task-Slogan Generation
+- [ ] Chinese Version AdGPT
 
 ## Acknowledgement
 
-We would like to express our gratitude to previous work, which includes but is not limited to: [Diffusers](https://github.com/huggingface/diffusers), [EasyOCR](https://github.com/JaidedAI/EasyOCR), [Detic](https://github.com/facebookresearch/Detic), [Transformers](https://github.com/huggingface/transformers), and [detectron2](https://github.com/facebookresearch/detectron2).
+We would like to express our gratitude to previous work, which includes but is not limited to: [Diffusers](https://github.com/huggingface/diffusers), [EasyOCR](https://github.com/JaidedAI/EasyOCR), [Detic](https://github.com/facebookresearch/Detic), [Transformers](https://github.com/huggingface/transformers), [CNOCR](https://github.com/breezedeus/cnocr) and [detectron2](https://github.com/facebookresearch/detectron2).
