@@ -28,3 +28,17 @@ def area(boxes):
     c = int(boxes[1])
     d = int(boxes[3])
     return (b - a) * (d - c)
+
+
+def check_args(args):
+
+    assert (
+        args.version == "en" or args.version == "cn"
+    ), "Currently AdGPT only support cn & en version, version argument shoule be one of them"
+    assert args.openai or args.chatglm, "Chat model shoule be one of openai or chatglm"
+    assert args.openai == False or (
+        args.openai_key is not None and args.openai_base is not None
+    ), "Openai mdoel shoule have api key and api base"
+    assert args.chatglm == False or (
+        args.glm_model is not None and args.glm_key is not None
+    )

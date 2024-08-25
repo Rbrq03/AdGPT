@@ -8,11 +8,9 @@ scikit-learn
 lvis
 nltk
 easyocr
-openai
 timm
 transformers
 accelerate
-
 open_clip_torch
 git+https://github.com/openai/CLIP.git
 
@@ -21,3 +19,9 @@ diffusers
 
 # For CN Version
 cnocr
+
+# For Openai
+openai
+
+# For GLM
+zhipuai

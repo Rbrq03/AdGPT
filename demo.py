@@ -3,12 +3,13 @@ import sys
 import torch
 import argparse
 
-from utils.llmchat import ChatGPT_chat
-from utils.util import cv2pil, pil2cv, crop_img
+from utils.llmchat import LLMs_chat
+from utils.util import cv2pil, pil2cv, crop_img, check_args
 from utils.observation import get_caption, get_ocr
 
 import detectron2
 from detectron2.utils.logger import setup_logger
+
 setup_logger()
 
 from detectron2 import model_zoo
@@ -28,27 +29,38 @@ from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from transformers import BlipProcessor
 
 
-HINT_PROMPT = open("./prompts/hint.txt", 'r').read()
-CLASSIFY_ROLE = open("./prompts/classify.txt", 'r').read()
-ROLE_PROMPT = open("./prompts/role.txt", 'r').read()
+HINT_PROMPT = open("./prompts/hint.txt", "r").read()
+CLASSIFY_ROLE = open("./prompts/classify.txt", "r").read()
+ROLE_PROMPT = open("./prompts/role.txt", "r").read()
 
 
 class AdGPT:
 
-    def __init__(self, api_key, openai_base, chat_model):
-        
-        self.api_key = api_key
-        self.base_url = openai_base
-        self.chat_model = chat_model
+    def __init__(self, args):
+
         self.predictor, self.metadata = self.set_detic()
         self.processor, self.model = self.set_caption_model()
-        
+        self.version = args.version
+
+        if self.openai:
+            self.api_key = args.openai_key
+            self.base_url = args.openai_base
+            self.chat_model = args.openai_model
+            self.llm = "openai"
+        elif self.chatglm:
+            self.api_key = args.glm_key
+            self.chat_model = args.openai_model
+            self.base_url = None
+            self.llm = "glm"
+
     def set_detic(self):
-    
+
         cfg = get_cfg()
         add_centernet_config(cfg)
         add_detic_config(cfg)
-        cfg.merge_from_file("configs/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.yaml")
+        cfg.merge_from_file(
+            "configs/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.yaml"
+        )
         cfg.MODEL.WEIGHTS = "https://dl.fbaipublicfiles.com/detic/Detic_LCOCOI21k_CLIP_SwinB_896b32_4x_ft4x_max-size.pth"
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
         cfg.MODEL.ROI_BOX_HEAD.ZEROSHOT_WEIGHT_PATH = "rand"
@@ -109,7 +121,7 @@ class AdGPT:
 
         observation = {
             "Image_caption": get_caption(image, self.processor, self.model),
-            "OCR": get_ocr(img),
+            "OCR": get_ocr(img, self.version),
             "Info_per_object": info_per_obj,
         }
 
@@ -121,7 +133,9 @@ class AdGPT:
             {"role": "system", "content": CLASSIFY_ROLE},
         ]
 
-        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
+        response = LLMs_chat(
+            messages, self.api_key, self.base_url, self.chat_model, self.llm
+        )
 
         messages.append(
             {
@@ -133,10 +147,11 @@ class AdGPT:
         info = HINT_PROMPT + "\n" + str(self.observation)
         messages.append({"role": "user", "content": info})
 
-        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
+        response = LLMs_chat(
+            messages, self.api_key, self.base_url, self.chat_model, self.llm
+        )
 
         return response
-
 
     def predict(self, image_path):
         self.img_path = image_path
@@ -151,8 +166,10 @@ class AdGPT:
                 "content": f"You need to summarize a {classify_res} ad, first you only need to generate the general chain of reasoning of ad with type {classify_res} based on the characteristics of the {classify_res} ad, using A, B, C... to show the inference chain order",
             },
         ]
-        
-        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
+
+        response = LLMs_chat(
+            messages, self.api_key, self.base_url, self.chat_model, self.llm
+        )
 
         prompt1 = "Analyze the content of this ad step by step according to the chain of reasoning given above, and then summarize the ad for me. The result of the analysis starts with Thought:, and the final result of the summary starts with Summary:"
         prompt2 = "Here is visual result:" + str(self.observation)
@@ -166,7 +183,9 @@ class AdGPT:
         messages.append({"role": "user", "content": prompt1})
         messages.append({"role": "user", "content": prompt2})
 
-        response = ChatGPT_chat(messages, self.api_key, self.base_url, self.chat_model)
+        response = LLMs_chat(
+            messages, self.api_key, self.base_url, self.chat_model, self.llm
+        )
         index = response.find("Summary")
         response = response[index:]
 
@@ -174,18 +193,40 @@ class AdGPT:
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description='AdGPT')
-    parser.add_argument('--image_path', type=str, help='Path to the image file')
-    parser.add_argument('--openai_key', type=str, help='openai api_key')
-    parser.add_argument('--openai_base', type=str, help='openai api_base')
-    parser.add_argument('--chat_model', type=str, help='openai chat model')
+    parser = argparse.ArgumentParser(description="AdGPT")
+    parser.add_argument("--image_path", type=str, help="Path to the image file")
+    parser.add_argument(
+        "--version", type=str, help="AdGPT version, currently support cn and en"
+    )
+
+    # Openai Argument
+    parser.add_argument("--openai", action="store_true", help="use openai series model")
+    parser.add_argument("--openai_key", type=str, help="openai api_key", default=None)
+    parser.add_argument("--openai_base", type=str, help="openai api_base", default=None)
+    parser.add_argument(
+        "--openai_model", type=str, help="openai chat model name", default="gpt-4o-mini"
+    )
+
+    # GLM Argument
+    parser.add_argument("--chatglm", action="store_true", help="use glm serise model")
+    parser.add_argument("--glm_key", type=str, help="glm api_key", default=None)
+    parser.add_argument(
+        "--glm_model",
+        type=str,
+        help="glm chat model name",
+        default="glm4",
+    )
+
     args = parser.parse_args()
 
+    check_args(args)
+
     return args
+
 
 if __name__ == "__main__":
 
     args = get_args()
-    agent = AdGPT(args.openai_key, args.openai_base, args.chat_model)
+    agent = AdGPT(args)
     _, result = agent.predict(args.image_path)
     print(result)
