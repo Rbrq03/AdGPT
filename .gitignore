@@ -1,3 +1,4 @@
 scripts/
 *.log
 exp.py
+__pycache__/
