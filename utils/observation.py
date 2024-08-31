@@ -5,7 +5,7 @@ import cnocr
 def get_ocr(image, version="en"):
 
     if version == "en":
-        reader = easyocr.Reader(["en"], detect_network="dbnet18", gpu=True)
+        reader = easyocr.Reader(["en"], detect_network="craft", gpu=True)
         result = reader.readtext(image, detail=0, paragraph=True)
     elif version == "cn":
         reader = cnocr.CnOcr(context="cuda:0")

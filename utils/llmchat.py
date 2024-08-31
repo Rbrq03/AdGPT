@@ -11,6 +11,7 @@ def LLMs_chat(messages, api_key, base_url, model, llm, temperature=0.6):
         client = ZhipuAI(api_key=api_key)
 
     try:
+        print(messages)
         response = client.chat.completions.create(
             model=model,
             messages=messages,

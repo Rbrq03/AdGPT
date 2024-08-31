@@ -36,7 +36,7 @@ CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
 
 **GLM series**
 ```
-CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
+CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/book.jpg \
                --chatglm \
                --glm_key YOUR_API_KEY \
                --chat_model glm4

@@ -41,6 +41,10 @@ class AdGPT:
         self.predictor, self.metadata = self.set_detic()
         self.processor, self.model = self.set_caption_model()
         self.version = args.version
+        self.show_intermediate = args.show_intermediate_result
+
+        self.openai = args.openai
+        self.chatglm = args.chatglm
 
         if self.openai:
             self.api_key = args.openai_key
@@ -157,7 +161,13 @@ class AdGPT:
         self.img_path = image_path
         self.observation = self.get_observation()
 
+        if self.show_intermediate:
+            print(self.observation)
+
         classify_res = self.classify()
+
+        if self.show_intermediate:
+            print(classify_res)
 
         messages = [
             {"role": "system", "content": ROLE_PROMPT},
@@ -196,11 +206,16 @@ def get_args():
     parser = argparse.ArgumentParser(description="AdGPT")
     parser.add_argument("--image_path", type=str, help="Path to the image file")
     parser.add_argument(
-        "--version", type=str, help="AdGPT version, currently support cn and en"
+        "--version",
+        type=str,
+        help="AdGPT version, currently support cn and en",
+        default="en",
     )
 
     # Openai Argument
-    parser.add_argument("--openai", action="store_true", help="use openai series model")
+    parser.add_argument(
+        "--openai", action="store_true", help="use openai series model", default=False
+    )
     parser.add_argument("--openai_key", type=str, help="openai api_key", default=None)
     parser.add_argument("--openai_base", type=str, help="openai api_base", default=None)
     parser.add_argument(
@@ -208,13 +223,21 @@ def get_args():
     )
 
     # GLM Argument
-    parser.add_argument("--chatglm", action="store_true", help="use glm serise model")
+    parser.add_argument(
+        "--chatglm", action="store_true", help="use glm serise model", default=False
+    )
     parser.add_argument("--glm_key", type=str, help="glm api_key", default=None)
     parser.add_argument(
         "--glm_model",
         type=str,
         help="glm chat model name",
         default="glm4",
+    )
+
+    parser.add_argument(
+        "--show_intermediate_result",
+        action="store_true",
+        help="show the intermediate OCR and Classification result of AdGPT",
     )
 
     args = parser.parse_args()
