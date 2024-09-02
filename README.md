@@ -36,10 +36,12 @@ CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/test.jpg \
 
 **GLM series**
 ```
-CUDA_VISIBLE_DEVICES=0 python demo.py --image_path ./img/book.jpg \
+
+CUDA_VISIBLE_DEVICES=0 python exp.py --image_path img/book.jpg \
                --chatglm \
                --glm_key YOUR_API_KEY \
-               --chat_model glm4
+               --glm_model glm-4-flash \
+               --version cn \
 ```
 
 Check [OpenAI](https://platform.openai.com/playground/chat) and [GLM](https://open.bigmodel.cn/dev/howuse/introduction) documents for how to get your own API.
