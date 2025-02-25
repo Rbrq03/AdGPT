@@ -1,4 +1,4 @@
-# AdGPT: Explore Meaningful Advertising with ChatGPT
+# [TOMM] AdGPT: Explore Meaningful Advertising with ChatGPT
 
 Official repo for AdGPT: Explore Meaningful Advertising with ChatGPT
 
